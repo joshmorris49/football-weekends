@@ -1,0 +1,42 @@
+name: Update game data
+
+on:
+  schedule:
+    - cron: "23 11 * * *"   # daily, ~6am Central: picks up Saturday CFB, Sunday NFL and Monday night results
+  workflow_dispatch:
+    inputs:
+      full:
+        description: "Refetch every season since 2010"
+        type: boolean
+        default: false
+  push:
+    paths:
+      - "scripts/fetch_games.py"
+      - ".github/workflows/update-data.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-data-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Fetch games
+        run: python3 scripts/fetch_games.py ${{ (inputs.full && '--full') || '' }}
+      - name: Commit if changed
+        run: |
+          if [ -z "$(git status --porcelain -- data/)" ]; then echo "No changes"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898333+github-actions[bot]@users.noreply.github.com"
+          git add data/
+          git commit -m "Update game data"
+          git push
