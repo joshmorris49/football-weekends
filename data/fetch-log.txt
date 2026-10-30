@@ -1,6 +1,37 @@
 python 3.12.15
+cfb 2010: 808 games (808 final) in 8s
+cfb 2011: 812 games (812 final) in 13s
+cfb 2012: 847 games (847 final) in 14s
+cfb 2013: 857 games (857 final) in 18s
   bad event None (2014 week 1): KeyError 'competitions'
-cfb 2014: 867 games (867 final) in 13s
-cfb 2026: 927 games (572 final) in 40s
-nfl 2026: 285 games (108 final) in 5s
-wrote /home/runner/work/football-weekends/football-weekends/data/games.json (810 KB)
+cfb 2014: 867 games (867 final) in 19s
+cfb 2015: 870 games (870 final) in 8s
+cfb 2016: 873 games (873 final) in 17s
+cfb 2017: 874 games (874 final) in 8s
+cfb 2018: 884 games (884 final) in 9s
+cfb 2019: 888 games (888 final) in 7s
+cfb 2020: 568 games (568 final) in 12s
+cfb 2021: 887 games (887 final) in 8s
+cfb 2022: 896 games (896 final) in 8s
+cfb 2023: 911 games (911 final) in 15s
+cfb 2024: 919 games (919 final) in 85s
+cfb 2025: 934 games (934 final) in 75s
+cfb 2026: 927 games (572 final) in 66s
+nfl 2010: 268 games (268 final) in 7s
+nfl 2011: 268 games (268 final) in 9s
+nfl 2012: 268 games (268 final) in 9s
+nfl 2013: 267 games (267 final) in 8s
+nfl 2014: 267 games (267 final) in 7s
+nfl 2015: 267 games (267 final) in 7s
+nfl 2016: 267 games (267 final) in 9s
+nfl 2017: 268 games (268 final) in 9s
+nfl 2018: 268 games (268 final) in 9s
+nfl 2019: 268 games (268 final) in 9s
+nfl 2020: 269 games (269 final) in 9s
+nfl 2021: 286 games (286 final) in 9s
+nfl 2022: 285 games (285 final) in 9s
+nfl 2023: 286 games (286 final) in 9s
+nfl 2024: 286 games (286 final) in 9s
+nfl 2025: 286 games (286 final) in 9s
+nfl 2026: 285 games (108 final) in 9s
+wrote /home/runner/work/football-weekends/football-weekends/data/games.json (858 KB)
