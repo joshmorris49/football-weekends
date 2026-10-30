@@ -31,8 +31,12 @@ jobs:
         with:
           python-version: "3.12"
       - name: Fetch games
-        run: python3 scripts/fetch_games.py ${{ (inputs.full && '--full') || '' }}
+        run: |
+          mkdir -p data
+          set -o pipefail
+          python3 scripts/fetch_games.py ${{ (inputs.full && '--full') || '' }} 2>&1 | tee data/fetch-log.txt
       - name: Commit if changed
+        if: always()
         run: |
           if [ -z "$(git status --porcelain -- data/)" ]; then echo "No changes"; exit 0; fi
           git config user.name "github-actions[bot]"

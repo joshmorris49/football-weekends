@@ -45,7 +45,11 @@ def fetch_season(league, season, teams):
     for stype, weeks in ((2, reg_weeks), (3, post_weeks)):
         for wk in weeks:
             q = "&".join(f"{k}={v}" for k, v in {**extra, "dates": season, "seasontype": stype, "week": wk}.items())
-            data = get(BASE.format(sport=sport) + "?" + q)
+            try:
+                data = get(BASE.format(sport=sport) + "?" + q)
+            except Exception as e:  # a missing week shouldn't sink the whole run
+                print(f"  skip {league} {season} type {stype} week {wk}: {type(e).__name__}: {e}", flush=True)
+                continue
             for ev in data.get("events", []):
                 g = parse(ev, season, stype, teams)
                 if g:
@@ -82,6 +86,7 @@ def current_season(now):
 
 
 def main():
+    print("python", sys.version.split()[0], flush=True)
     full = "--full" in sys.argv
     now = datetime.now(timezone.utc)
     cur = current_season(now)
@@ -95,7 +100,12 @@ def main():
         todo = [s for s in seasons if full or s not in have or s >= cur]
         for s in todo:
             t0 = time.time()
-            have[s] = fetch_season(league, s, out["teams"][league])
+            try:
+                have[s] = fetch_season(league, s, out["teams"][league])
+            except Exception as e:
+                print(f"{league} {s}: FAILED {type(e).__name__}: {e}", flush=True)
+                import traceback; traceback.print_exc(file=sys.stdout)
+                continue
             done = sum(1 for g in have[s] if g[4] is not None)
             print(f"{league} {s}: {len(have[s])} games ({done} final) in {time.time() - t0:.0f}s", flush=True)
         out["games"][league] = [g for s in seasons for g in have.get(s, [])]
