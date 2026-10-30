@@ -74,10 +74,15 @@ main{padding:22px 16px 40px}
 h2{font:800 26px var(--f-display);text-transform:uppercase;margin:0 0 4px}
 .hint{color:var(--muted);font-size:14px;margin:0 0 14px}
 .seasons{display:flex;flex-direction:column;gap:2px}
-.srow{display:grid;grid-template-columns:52px minmax(0,1fr) 78px;gap:10px;align-items:center;padding:6px 0;border-top:1px solid var(--line)}
+.srow{display:grid;grid-template-columns:52px auto minmax(110px,1fr);gap:10px;align-items:center;padding:6px 0;border-top:1px solid var(--line)}
 .srow:first-child{border-top:0}
 .yr{font:800 20px var(--f-display)}
-.dots{display:flex;flex-wrap:wrap;gap:5px}
+.dots{display:grid;grid-template-columns:repeat(26,18px);gap:6px 5px}
+@media (max-width:860px){.dots{grid-template-columns:repeat(13,18px)}}
+.wk.none{cursor:default;opacity:.55}
+.months{display:grid;grid-template-columns:repeat(26,18px);column-gap:5px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+@media (max-width:860px){.months{display:none}}
+.reclab{font-size:12px;color:var(--muted);text-align:right}
 .wk{width:18px;height:18px;border-radius:50%;border:0;padding:0;cursor:pointer;background:var(--none)}
 .wk.good{background:var(--good)} .wk.split{background:var(--split)} .wk.bad{background:var(--bad)}
 .wk.one{background:transparent;box-shadow:inset 0 0 0 2px var(--one)}
@@ -86,7 +91,16 @@ h2{font:800 26px var(--f-display);text-transform:uppercase;margin:0 0 4px}
 .wk:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 .rec{font:700 15px var(--f-body);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
 .rec small{display:block;font-weight:500;font-size:12px;color:var(--muted)}
-@media (max-width:480px){.srow{grid-template-columns:40px minmax(0,1fr) 60px;gap:8px}.wk{width:15px;height:15px}.dots{gap:4px}}
+@media (max-width:860px){
+  .srow{grid-template-columns:58px minmax(0,1fr);row-gap:0;align-items:start}
+  .srow.head{display:none}
+  .yr{grid-column:1;grid-row:1}
+  .dots{grid-column:2;grid-row:1 / span 2;grid-template-columns:repeat(13,minmax(0,1fr));gap:5px 4px;max-width:330px}
+  .dots .wk{width:100%;height:auto;aspect-ratio:1;max-width:18px}
+  .rec{grid-column:1;grid-row:2;text-align:left;font-size:13px;color:var(--muted)}
+  .keyrow .gsb{display:inline}
+}
+.keyrow .gsb{display:none}
 .detail{position:sticky;bottom:12px;margin-top:14px;background:var(--ink);color:var(--bg);border-radius:12px;padding:12px 14px;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.2)}
 .detail b{font-weight:700}
 .detail .g{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
@@ -128,10 +142,10 @@ footer{color:var(--muted);font-size:13px;padding:0 16px 40px}
 
     <section class="card">
       <h2>Every weekend</h2>
-      <p class="hint">One dot per weekend (Tuesday through Monday), oldest season at the bottom. Tap a dot for the scores.</p>
+      <p class="hint">One dot per weekend (Tuesday through Monday), late August on the left through the Super Bowl on the right, so the same week lines up every season. Tap a dot for the scores.</p>
       <div class="keyrow">
         <span><i class="wk good"></i>Both won</span><span><i class="wk split"></i>Split</span><span><i class="wk bad"></i>Both lost</span>
-        <span><i class="wk one"></i>Only one played (not counted)</span><span><i class="wk up"></i>Not played yet</span>
+        <span><i class="wk one"></i>Only one played (not counted)</span><span><i class="wk up"></i>Not played yet</span><span class="gsb">Under each year: good–split–bad</span>
       </div>
       <div class="seasons" id="seasons"></div>
       <div class="detail" id="detail" hidden aria-live="polite"></div>
@@ -157,7 +171,7 @@ function teamList(league){
   const per = {};
   for (const g of D.games[league]) for (const id of [g[2], g[3]]) { const k = id+"|"+g[0]; per[k] = (per[k]||0)+1; }
   const ok = new Set(Object.entries(per).filter(([,n])=>n>=6).map(([k])=>k.split("|")[0]));
-  return Object.entries(D.teams[league]).filter(([id])=> league==="nfl" || ok.has(id))
+  return Object.entries(D.teams[league]).filter(([id,t])=> ok.has(id) && !id.startsWith("-") && !["TBD","AFC","NFC"].includes(t[2]))
     .map(([id,t])=>({id, name:t[0], short:t[1], abbr:t[2], color:t[3], alt:t[4], slug:slug(t[0])}))
     .sort((a,b)=>a.name.localeCompare(b.name));
 }
@@ -191,6 +205,20 @@ function combine(){
     return {sat, season, c, n, out};
   });
   return weeks;
+}
+
+// fixed calendar columns: column 0 is the first Saturday on or after Aug 20, so the same week lines up every year
+function slots(season, ws){
+  const d = new Date(Date.UTC(season, 7, 20, 12)); d.setUTCDate(d.getUTCDate() + (6 - d.getUTCDay() + 7) % 7);
+  const start = d.getTime(), out = Array.from({length:26}, (_, i)=>({out:"none", sat:new Date(start + i*7*864e5).toISOString().slice(0,10)}));
+  for (const w of ws) { const i = Math.round((new Date(w.sat+"T12:00:00Z") - start) / (7*864e5)); if (i >= 0 && i < 26) out[i] = w; else if (i >= 26) out.push(w); }
+  const g = ws.filter(w=>w.out==="good").length, sp = ws.filter(w=>w.out==="split").length, b = ws.filter(w=>w.out==="bad").length;
+  return Object.assign(out, {g, sp, b});
+}
+
+function monthCells(){
+  let last = ""; return slots(2025, []).slice(0,26).map(w=>{ const m = new Date(w.sat+"T12:00:00Z").toLocaleDateString("en-US",{month:"short",timeZone:"UTC"});
+    const show = m!==last; last = m; return `<span>${show?m:""}</span>`; }).join("");
 }
 
 function seasonsIn(range, all){
@@ -238,11 +266,12 @@ function render(){
   } else $("next").hidden = true;
 
   // season rows
-  $("seasons").innerHTML = seasons.map(s=>{
-    const ws = all.filter(w=>w.season===s);
-    const g = ws.filter(w=>w.out==="good").length, sp = ws.filter(w=>w.out==="split").length, b = ws.filter(w=>w.out==="bad").length;
-    return `<div class="srow"><div class="yr">${s}</div><div class="dots">${ws.map(w=>`<button class="wk ${w.out}" data-sat="${w.sat}" aria-pressed="${state.sel===w.sat}" aria-label="Weekend of ${fmtDay(w.sat)} ${w.sat.slice(0,4)}: ${({good:"both won",split:"split",bad:"both lost",one:"only one team played",up:"not played yet"})[w.out]}"></button>`).join("")}</div>
-      <div class="rec">${g}–${sp}–${b}<small>good–split–bad</small></div></div>`;
+  const head = `<div class="srow head" style="border-top:0;padding-bottom:0"><div></div><div class="months">${monthCells()}</div><div class="reclab">good–split–bad</div></div>`;
+  $("seasons").innerHTML = (seasons.length ? head : "") + seasons.map(s=>{
+    const ws = slots(s, all.filter(w=>w.season===s));
+    const {g, sp, b} = ws;
+    return `<div class="srow"><div class="yr">${s}</div><div class="dots">${ws.map(w=> w.out==="none" ? `<span class="wk none" aria-hidden="true"></span>` : `<button class="wk ${w.out}" data-sat="${w.sat}" aria-pressed="${state.sel===w.sat}" aria-label="Weekend of ${fmtDay(w.sat)} ${w.sat.slice(0,4)}: ${({good:"both won",split:"split",bad:"both lost",one:"only one team played",up:"not played yet"})[w.out]}"></button>`).join("")}</div>
+      <div class="rec">${g}–${sp}–${b}</div></div>`;
   }).join("") || `<p class="empty">No games for these two teams in this range.</p>`;
   renderDetail(all);
 }

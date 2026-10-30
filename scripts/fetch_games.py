@@ -81,6 +81,10 @@ def parse(ev, season, stype, teams):
     sides = {c["homeAway"]: c for c in comp["competitors"]}
     if set(sides) != {"home", "away"}:
         return None
+    ids = [sides[k]["team"]["id"] for k in ("home", "away")]
+    abbrs = {sides[k]["team"].get("abbreviation", "") for k in ("home", "away")}
+    if any(i.startswith("-") for i in ids) or abbrs <= {"AFC", "NFC", "TBD"}:  # unset playoff slots, Pro Bowl
+        return None
     for c in sides.values():
         t = c["team"]
         teams[t["id"]] = [t.get("displayName") or t.get("name", ""), t.get("shortDisplayName") or t.get("location", ""),
@@ -131,7 +135,10 @@ def main():
                 continue
             done = sum(1 for g in have[s] if g[4] is not None)
             print(f"{league} {s}: {len(have[s])} games ({done} final) in {time.time() - t0:.0f}s", flush=True)
-        out["games"][league] = [g for s in seasons for g in have.get(s, [])]
+        out["games"][league] = [g for s in seasons for g in have.get(s, [])
+                                if not (g[2].startswith("-") or g[3].startswith("-"))]
+        used = {t for g in out["games"][league] for t in (g[2], g[3])}
+        out["teams"][league] = {k: v for k, v in out["teams"][league].items() if k in used}
     OUT.parent.mkdir(exist_ok=True)
     OUT.write_text(json.dumps(out, separators=(",", ":"), ensure_ascii=False))
     print(f"wrote {OUT} ({OUT.stat().st_size // 1024} KB)")
