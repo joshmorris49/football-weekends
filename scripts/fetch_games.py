@@ -19,6 +19,9 @@ FIRST_SEASON = 2010
 OUT = Path(__file__).resolve().parent.parent / "data" / "games.json"
 ET = ZoneInfo("America/New_York")
 BASE = "https://site.api.espn.com/apis/site/v2/sports/football/{sport}/scoreboard"
+# ESPN conference group ids: ACC, Big East (to 2012), Big 12, Big Ten, SEC, Pac-12, C-USA, MAC, WAC (to 2012),
+# Mountain West, FBS Independents, Sun Belt, American
+CFB_CONFERENCES = [1, 10, 4, 5, 8, 9, 12, 15, 16, 17, 18, 37, 151]
 LEAGUES = {
     # sport path, extra params, regular-season weeks to try, postseason weeks to try
     "cfb": ("college-football", {"groups": "80", "limit": "1000"}, range(1, 18), range(1, 3)),
@@ -50,8 +53,22 @@ def fetch_season(league, season, teams):
             except Exception as e:  # a missing week shouldn't sink the whole run
                 print(f"  skip {league} {season} type {stype} week {wk}: {type(e).__name__}: {e}", flush=True)
                 continue
-            for ev in data.get("events", []):
-                g = parse(ev, season, stype, teams)
+            events = data.get("events", [])
+            if league == "cfb" and events and len(events) % 25 == 0:
+                # ESPN pages newer seasons at 25 events no matter the limit; re-ask one conference at a time
+                for grp in CFB_CONFERENCES:
+                    qq = q.replace("groups=80", f"groups={grp}")
+                    try:
+                        events += get(BASE.format(sport=sport) + "?" + qq).get("events", [])
+                    except Exception as e:
+                        print(f"  skip {league} {season} week {wk} group {grp}: {e}", flush=True)
+                    time.sleep(0.1)
+            for ev in events:
+                try:
+                    g = parse(ev, season, stype, teams)
+                except (KeyError, IndexError, TypeError, ValueError) as e:
+                    print(f"  bad event {ev.get('id')} ({season} week {wk}): {type(e).__name__} {e}", flush=True)
+                    continue
                 if g:
                     games[ev["id"]] = g
             time.sleep(0.15)
