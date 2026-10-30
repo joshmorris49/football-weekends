@@ -16,7 +16,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 FIRST_SEASON = 2010
-VERSION = 2  # bump to force a full refetch after a fetch-logic change
+VERSION = 3  # bump to force a full refetch after a fetch-logic change
 OUT = Path(__file__).resolve().parent.parent / "data" / "games.json"
 ET = ZoneInfo("America/New_York")
 BASE = "https://site.api.espn.com/apis/site/v2/sports/football/{sport}/scoreboard"
