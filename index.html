@@ -106,6 +106,32 @@ h2{font:800 26px var(--f-display);text-transform:uppercase;margin:0 0 4px}
 .detail .g{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
 .detail .res{font-weight:700;min-width:22px}
 .empty{color:var(--muted);padding:20px 0}
+.tabs{display:flex;gap:4px;border-bottom:2px solid var(--line);margin-bottom:16px}
+.tab{all:unset;cursor:pointer;font:800 20px var(--f-display);text-transform:uppercase;letter-spacing:.02em;padding:8px 12px;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-2px}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--good)}
+.tab:focus-visible{outline:3px solid var(--good);outline-offset:2px}
+.tab{white-space:nowrap}
+@media (max-width:480px){.tab{font-size:17px;padding:8px 8px}.lrow{grid-template-columns:20px minmax(0,1fr) auto;gap:8px}.lrow .val{font-size:19px}}
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:-6px 0 16px}
+.filters .lbl{font:600 12px var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-right:2px}
+.lb-intro{color:var(--muted);font-size:14px;margin:0 0 16px;max-width:75ch}
+.boards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:760px){.boards{grid-template-columns:1fr}}
+.board h3{font:800 22px var(--f-display);text-transform:uppercase;margin:0}
+.board .why{color:var(--muted);font-size:13px;margin:2px 0 10px}
+.board ol{list-style:none;margin:0;padding:0}
+.lrow{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 6px;border-top:1px solid var(--line);cursor:pointer;border-radius:6px}
+.lrow:hover{background:var(--soft)}
+.lrow:focus-visible{outline:2px solid var(--good);outline-offset:-2px}
+li:first-child .lrow{border-top:0}
+.lrow .rk{font:800 18px var(--f-display);color:var(--muted);text-align:right}
+.lrow .who{min-width:0}
+.lrow .who b{font-weight:600;display:block;line-height:1.3}
+.lrow .who small{color:var(--muted);font-size:12.5px}
+.lrow .sw{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:0}
+.lrow .val{font:800 22px var(--f-display);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.lrow .val small{display:block;font:500 12px var(--f-body);color:var(--muted)}
+.board .none{color:var(--muted);font-size:14px;padding:8px 0}
 footer{color:var(--muted);font-size:13px;padding:0 16px 40px}
 .keyrow{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted);margin:0 0 12px}
 .keyrow .wk{width:12px;height:12px;cursor:default;vertical-align:-1px;margin-right:5px;display:inline-block}
@@ -127,7 +153,12 @@ footer{color:var(--muted);font-size:13px;padding:0 16px 40px}
 <main class="wrap">
   <p class="empty" id="loading">Loading every game since 2010…</p>
   <div id="app" hidden>
+    <nav class="tabs" role="tablist" aria-label="Views">
+      <button class="tab" role="tab" id="tab-main" aria-controls="view-main" aria-selected="true">Your weekends</button>
+      <button class="tab" role="tab" id="tab-leaders" aria-controls="view-leaders" aria-selected="false">Leaderboards</button>
+    </nav>
     <div class="ranges" role="group" aria-label="Time range" id="ranges"></div>
+    <div id="view-main" role="tabpanel" aria-labelledby="tab-main">
 
     <section class="hero">
       <div class="card">
@@ -150,6 +181,19 @@ footer{color:var(--muted);font-size:13px;padding:0 16px 40px}
       <div class="seasons" id="seasons"></div>
       <div class="detail" id="detail" hidden aria-live="polite"></div>
     </section>
+    </div>
+
+    <div id="view-leaders" role="tabpanel" aria-labelledby="tab-leaders" hidden>
+      <div class="filters" role="group" aria-label="College team filter" id="cfbFilter">
+        <span class="lbl">College teams</span>
+        <button class="chip" data-f="0" aria-pressed="false">All FBS</button>
+        <button class="chip" data-f="0.5" aria-pressed="true">.500 or better</button>
+        <button class="chip" data-f="0.6" aria-pressed="false">.600 or better</button>
+        <button class="chip" data-f="0.7" aria-pressed="false">.700 or better</button>
+      </div>
+      <p class="lb-intro" id="lbIntro"></p>
+      <div class="boards" id="boards"></div>
+    </div>
   </div>
 </main>
 <footer class="wrap" id="foot"></footer>
@@ -252,6 +296,8 @@ function render(){
     fact(esc(state.cfb.short), `${cw}–${cl}`, `in ${esc(label)}`),
     fact(esc(state.nfl.short), `${nw}–${nl}`, `in ${esc(label)}`),
     fact("Luck", N ? (G-exp>=0?"+":"")+(G-exp).toFixed(1) : "—", N ? `vs ${exp.toFixed(1)} good weekends expected from those records` : "no shared weekends"),
+    (()=>{ const r = comboStats(state.range).rankOf(state.cfb.id, state.nfl.id);
+      return r ? fact("Rank", `#${r.rank.toLocaleString()}`, `of ${r.of.toLocaleString()} combos for good weekends`) : ""; })(),
     fact("Best streak", best ? `${best} straight` : "—", best ? `good weekends, ending ${fmtDay(bestEnd)} ${bestEnd.slice(0,4)}` : "no good weekends yet"),
     ranked.length ? fact("Best season ever", ranked[0][0], `${ranked[0][1].g} of ${ranked[0][1].n} good`) : "",
     ranked.length>1 ? fact("Worst season", ranked.at(-1)[0], `${ranked.at(-1)[1].g} of ${ranked.at(-1)[1].n} good`) : "",
@@ -286,6 +332,99 @@ function renderDetail(all){
   el.hidden = false;
 }
 
+/* ===================== Leaderboards: every college x NFL combo ===================== */
+let IDX = null;            // per-team weekend results, built once: {cfb:{id:{sat:{season,res,w,l}}}, nfl:{...}}
+const STATS = {};          // cached combo stats per range key
+let cfbMin = 0.5;
+
+function buildIndex(){
+  IDX = {cfb:{}, nfl:{}};
+  for (const lg of ["cfb","nfl"]) for (const g of D.games[lg]) {
+    const sat = satOf(g[1]);
+    for (const [id, us, them] of [[g[2], g[4], g[5]], [g[3], g[5], g[4]]]) {
+      const w = ((IDX[lg][id] ||= {})[sat] ||= {season:g[0], up:false, w:0, l:0, n:0});
+      w.n++; if (us==null) w.up = true; else if (us>them) w.w++; else if (us<them) w.l++;
+    }
+  }
+  for (const lg of ["cfb","nfl"]) for (const t of Object.values(IDX[lg])) for (const w of Object.values(t))
+    w.res = w.up ? "up" : w.w===w.n ? "W" : w.l===w.n ? "L" : "M";
+}
+
+function comboStats(range){
+  if (STATS[range]) return STATS[range];
+  if (!IDX) buildIndex();
+  const allSeasons = [...new Set(D.games.nfl.map(g=>g[0]))];
+  const seasons = new Set(seasonsIn(range, allSeasons.map(s=>({season:s}))));
+  const rec = (lg, id) => { let w=0,l=0; for (const x of Object.values(IDX[lg][id]||{})) if (seasons.has(x.season) && !x.up) { w+=x.w; l+=x.l; } return [w,l]; };
+  const cRec = Object.fromEntries(CFB.map(t=>[t.id, rec("cfb", t.id)])), nRec = Object.fromEntries(NFL.map(t=>[t.id, rec("nfl", t.id)]));
+  const nflWeeks = Object.fromEntries(NFL.map(t=>[t.id, Object.entries(IDX.nfl[t.id]||{}).filter(([,w])=>seasons.has(w.season) && !w.up).sort((a,b)=>a[0]<b[0]?-1:1)]));
+  const out = [];
+  for (const c of CFB) {
+    const cw = IDX.cfb[c.id] || {}; const [cW,cL] = cRec[c.id]; if (cW+cL===0) continue;
+    for (const n of NFL) {
+      let G=0,S=0,B=0,run=0,streak=0,streakEnd=null; const bySeason = {};
+      for (const [sat, nw] of nflWeeks[n.id]) {
+        const x = cw[sat]; if (!x || x.up) continue;
+        const o = x.res==="W"&&nw.res==="W" ? "good" : x.res==="L"&&nw.res==="L" ? "bad" : "split";
+        const bs = bySeason[nw.season] ||= {g:0,n:0}; bs.n++;
+        if (o==="good"){ G++; bs.g++; run++; if (run>streak){ streak=run; streakEnd=sat; } } else { run=0; if (o==="bad") B++; else S++; }
+      }
+      const N = G+S+B; if (!N) continue;
+      const [nW,nL] = nRec[n.id], cp = cW/(cW+cL), np = nW/((nW+nL)||1);
+      out.push({c, n, G, S, B, N, pct:G/N, exp:cp*np*N, luck:G-cp*np*N, cp, np, streak, streakEnd, bySeason});
+    }
+  }
+  const rankByG = [...out].sort((a,b)=>b.G-a.G);
+  out.rankOf = (cId, nId) => { const me = out.find(x=>x.c.id===cId && x.n.id===nId); return me ? {rank: 1 + rankByG.filter(x=>x.G>me.G).length, of: out.length} : null; };
+  out.seasonCount = seasons.size;
+  return STATS[range] = out;
+}
+
+const pc = x => (x*100).toFixed(0)+"%";
+const wl = p => p.toFixed(3).replace(/^0/,"");
+function lrow(i, x, val, sub, extra){
+  const sw = t => `<i class="sw" style="background:${t.color?"#"+t.color:"var(--muted)"}"></i>`;
+  return `<li><button class="lrow" data-c="${x.c.id}" data-n="${x.n.id}"><span class="rk">${i+1}</span>
+    <span class="who"><b>${sw(x.c)}${esc(x.c.short)} <span style="color:var(--muted);font-weight:500">+</span> ${sw(x.n)}${esc(x.n.short)}</b><small>${extra || `${x.G}–${x.S}–${x.B} · ${wl(x.cp)} / ${wl(x.np)}`}</small></span>
+    <span class="val">${val}${sub?`<small>${sub}</small>`:""}</span></button></li>`;
+}
+function board(title, why, rows){ return `<section class="card board"><h3>${title}</h3><p class="why">${why}</p>${rows.length?`<ol>${rows.join("")}</ol>`:`<p class="none">Not enough games in this range yet.</p>`}</section>`; }
+
+function renderLeaders(){
+  const all = comboStats(state.range).filter(x=>x.cp >= cfbMin);
+  const label = RANGES.find(r=>r[0]===state.range)[1].toLowerCase();
+  const maxN = Math.max(0, ...all.map(x=>x.N)), minN = Math.max(4, Math.round(maxN*0.6));
+  const qual = all.filter(x=>x.N>=minN);
+  const top = (arr, key, dir=-1, k=10) => [...arr].sort((a,b)=> dir*(a[key]-b[key]) || b.G-a.G).slice(0,k);
+  const nCfb = new Set(all.map(x=>x.c.id)).size;
+  $("lbIntro").innerHTML = `Every pairing of ${nCfb} college team${nCfb===1?"":"s"} ${cfbMin?`that won ${wl(cfbMin)} or better`:""} and all 32 NFL teams, ${esc(label)} (${all.length.toLocaleString()} combos). Rates and luck only rank combos with at least ${minN} shared weekends. Under each combo: good–split–bad weekends, then each team's win rate. Tap any row to open that combo.`;
+  const boards = [
+    board("Most good weekends", "Both teams won the same weekend.", top(all,"G").map((x,i)=>lrow(i,x,x.G,`of ${x.N}`))),
+    board("Best good-weekend rate", `Share of shared weekends that were good (min. ${minN}).`, top(qual,"pct").map((x,i)=>lrow(i,x,pc(x.pct),`${x.G} of ${x.N}`))),
+    board("Luckiest combos", "More good weekends than the two records predict: the wins kept landing on the same weekends.", top(qual,"luck").map((x,i)=>lrow(i,x,`+${x.luck.toFixed(1)}`,`${x.exp.toFixed(1)} expected`))),
+    board("Unluckiest combos", "Fewer good weekends than the two records predict: the wins kept landing on different weekends.", top(qual,"luck",1).map((x,i)=>lrow(i,x,x.luck.toFixed(1),`${x.exp.toFixed(1)} expected`))),
+    board("Longest good streak", "Most good weekends in a row, counting only weekends both played.", top(all,"streak").map((x,i)=>lrow(i,x,x.streak,`ending ${fmtDay(x.streakEnd)} ${x.streakEnd.slice(0,4)}`))),
+    board("Most miserable", "Most weekends where both teams lost.", top(all,"B").map((x,i)=>lrow(i,x,x.B,`of ${x.N}`))),
+  ];
+  const multi = new Set(all.flatMap(x=>Object.keys(x.bySeason))).size > 1;
+  if (multi) {
+    const seasons = [];
+    for (const x of all) for (const [yr, v] of Object.entries(x.bySeason)) if (v.n >= 8) seasons.push({...x, yr, sg:v.g, sn:v.n, sp:v.g/v.n});
+    const best = seasons.sort((a,b)=>b.sp-a.sp || b.sg-a.sg).slice(0,10);
+    boards.splice(2, 0, board("Best single seasons", "Highest good-weekend rate in one season (min. 8 shared weekends).", best.map((x,i)=>lrow(i,x,pc(x.sp),`${x.sg} of ${x.sn}`,`${x.yr} season`))));
+  }
+  $("boards").innerHTML = boards.join("");
+}
+
+/* tabs */
+function showTab(name, push){
+  const lead = name === "leaders";
+  $("tab-main").setAttribute("aria-selected", !lead); $("tab-leaders").setAttribute("aria-selected", lead);
+  $("view-main").hidden = lead; $("view-leaders").hidden = !lead;
+  if (lead) renderLeaders();
+  if (push) try { const u = new URL(location); u.hash = lead ? "leaders" : ""; history.replaceState(null, "", u); } catch(e){}
+}
+
 function syncURL(){ const u = new URL(location); u.searchParams.set("cfb", state.cfb.slug); u.searchParams.set("nfl", state.nfl.slug); history.replaceState(null,"",u); }
 function paint(sel, t){ sel.style.setProperty("--tc", t.color ? "#"+t.color : ""); }
 
@@ -302,10 +441,19 @@ async function boot(){
   }
   $("ranges").innerHTML = RANGES.map(([k,l])=>`<button class="chip" data-r="${k}" aria-pressed="${k===state.range}">${l}</button>`).join("");
   $("ranges").addEventListener("click", e=>{ const b = e.target.closest(".chip"); if(!b) return; state.range = b.dataset.r;
-    document.querySelectorAll("#ranges .chip").forEach(x=>x.setAttribute("aria-pressed", x===b)); render(); });
+    document.querySelectorAll("#ranges .chip").forEach(x=>x.setAttribute("aria-pressed", x===b)); render(); if (!$("view-leaders").hidden) renderLeaders(); });
+  $("tab-main").addEventListener("click", ()=>showTab("main", true));
+  $("tab-leaders").addEventListener("click", ()=>showTab("leaders", true));
+  $("cfbFilter").addEventListener("click", e=>{ const b = e.target.closest(".chip"); if(!b) return; cfbMin = +b.dataset.f;
+    document.querySelectorAll("#cfbFilter .chip").forEach(x=>x.setAttribute("aria-pressed", x===b)); renderLeaders(); });
+  $("boards").addEventListener("click", e=>{ const b = e.target.closest(".lrow"); if(!b) return;
+    state.cfb = CFB.find(t=>t.id===b.dataset.c); state.nfl = NFL.find(t=>t.id===b.dataset.n); state.sel = null;
+    for (const k of ["cfb","nfl"]) { $(k).value = state[k].id; paint($(k), state[k]); }
+    syncURL(); render(); showTab("main", true); window.scrollTo({top:0, behavior:"smooth"}); });
   $("seasons").addEventListener("click", e=>{ const b = e.target.closest(".wk"); if(!b) return; state.sel = state.sel===b.dataset.sat ? null : b.dataset.sat; render(); });
   $("foot").innerHTML = `Scores from ESPN, updated ${new Date(D.updated).toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}. A weekend runs Tuesday through Monday, so midweek college games and Monday Night Football count toward the nearest Saturday. Seasons are labeled by the year they start, so January bowls and playoffs count toward the season before. Unofficial fan project · <a href="https://github.com/joshmorris49/football-weekends">Code on GitHub</a>.`;
   syncURL(); $("loading").hidden = true; $("app").hidden = false; render();
+  showTab(location.hash === "#leaders" ? "leaders" : "main", false);
 }
 boot().catch(e=>{ $("loading").textContent = "Couldn't load the game data. Try refreshing."; console.error(e); });
 </script>
