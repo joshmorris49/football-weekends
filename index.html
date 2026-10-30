@@ -304,7 +304,7 @@ async function boot(){
   $("ranges").addEventListener("click", e=>{ const b = e.target.closest(".chip"); if(!b) return; state.range = b.dataset.r;
     document.querySelectorAll("#ranges .chip").forEach(x=>x.setAttribute("aria-pressed", x===b)); render(); });
   $("seasons").addEventListener("click", e=>{ const b = e.target.closest(".wk"); if(!b) return; state.sel = state.sel===b.dataset.sat ? null : b.dataset.sat; render(); });
-  $("foot").innerHTML = `Scores from ESPN, updated ${new Date(D.updated).toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}. A weekend runs Tuesday through Monday, so midweek college games and Monday Night Football count toward the nearest Saturday. Seasons are labeled by the year they start, so January bowls and playoffs count toward the season before. Unofficial fan project.`;
+  $("foot").innerHTML = `Scores from ESPN, updated ${new Date(D.updated).toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}. A weekend runs Tuesday through Monday, so midweek college games and Monday Night Football count toward the nearest Saturday. Seasons are labeled by the year they start, so January bowls and playoffs count toward the season before. Unofficial fan project · <a href="https://github.com/joshmorris49/football-weekends">Code on GitHub</a>.`;
   syncURL(); $("loading").hidden = true; $("app").hidden = false; render();
 }
 boot().catch(e=>{ $("loading").textContent = "Couldn't load the game data. Try refreshing."; console.error(e); });
