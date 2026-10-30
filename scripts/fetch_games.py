@@ -16,6 +16,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 FIRST_SEASON = 2010
+VERSION = 2  # bump to force a full refetch after a fetch-logic change
 OUT = Path(__file__).resolve().parent.parent / "data" / "games.json"
 ET = ZoneInfo("America/New_York")
 BASE = "https://site.api.espn.com/apis/site/v2/sports/football/{sport}/scoreboard"
@@ -107,8 +108,13 @@ def main():
     full = "--full" in sys.argv
     now = datetime.now(timezone.utc)
     cur = current_season(now)
-    old = json.loads(OUT.read_text()) if OUT.exists() and not full else {"teams": {"cfb": {}, "nfl": {}}, "games": {"cfb": [], "nfl": []}}
-    out = {"updated": now.strftime("%Y-%m-%dT%H:%MZ"), "teams": old["teams"], "games": {}}
+    empty = {"teams": {"cfb": {}, "nfl": {}}, "games": {"cfb": [], "nfl": []}}
+    old = json.loads(OUT.read_text()) if OUT.exists() else empty
+    if old.get("v") != VERSION:
+        full = True
+    if full:
+        old = empty
+    out = {"v": VERSION, "updated": now.strftime("%Y-%m-%dT%H:%MZ"), "teams": old["teams"], "games": {}}
     for league in LEAGUES:
         have = {}
         for g in old["games"].get(league, []):
