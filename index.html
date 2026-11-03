@@ -25,7 +25,7 @@
   --bg:#f3f4ef; --surface:#ffffff; --ink:#15201a; --muted:#5e6a62; --line:#d9ded8; --soft:#eceee9;
   --head:#13261b; --head-ink:#f4f6f1; --head-muted:#a9bcae;
   --good:#1f9d55; --split:#d99a1e; --bad:#d4483b; --one:#b7beb8; --none:#e4e7e2;
-  --f-display:"Big Shoulders Display","Arial Narrow",sans-serif; --f-body:"Inter",system-ui,sans-serif;
+  --f-display:"Big Shoulders Display","Arial Narrow","Roboto Condensed","TeX Gyre Heros Cn",sans-serif; --f-body:"Inter",system-ui,sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#0f1512; --surface:#18201b; --ink:#ebefe9; --muted:#9aa79e; --line:#2c3730; --soft:#202a24;
@@ -111,7 +111,9 @@ h2{font:800 26px var(--f-display);text-transform:uppercase;margin:0 0 4px}
 .tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--good)}
 .tab:focus-visible{outline:3px solid var(--good);outline-offset:2px}
 .tab{white-space:nowrap}
-@media (max-width:480px){.tab{font-size:17px;padding:8px 8px}.lrow{grid-template-columns:20px minmax(0,1fr) auto;gap:8px}.lrow .val{font-size:19px}}
+.tabs{overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+@media (max-width:480px){.tabs{gap:14px}.tab{flex:1 1 0;min-width:0;white-space:normal;text-align:center;line-height:1.05;font-size:16px;padding:8px 4px;display:flex;align-items:flex-end;justify-content:center}.lrow{grid-template-columns:20px minmax(0,1fr) auto;gap:8px}.lrow .val{font-size:19px}}
 .filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:-6px 0 16px}
 .filters .lbl{font:600 12px var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-right:2px}
 .lb-intro{color:var(--muted);font-size:14px;margin:0 0 16px;max-width:75ch}
@@ -132,6 +134,34 @@ li:first-child .lrow{border-top:0}
 .lrow .val{font:800 22px var(--f-display);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
 .lrow .val small{display:block;font:500 12px var(--f-body);color:var(--muted)}
 .board .none{color:var(--muted);font-size:14px;padding:8px 0}
+.h2h-pick{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:12px;align-items:stretch;margin-bottom:16px}
+@media (max-width:640px){.h2h-pick{grid-template-columns:1fr}.h2h-pick .vs{justify-self:center}}
+.side{display:flex;flex-direction:column;gap:8px}
+.side label{font:600 11px var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.side input,.side select{font:600 16px var(--f-body);padding:10px 12px;border-radius:10px;border:2px solid var(--tc,var(--line));background:var(--surface);color:var(--ink);width:100%}
+.side input{border-color:var(--line)}
+.side input:focus-visible,.side select:focus-visible{outline:3px solid var(--good);outline-offset:1px}
+.vs{align-self:center;font:800 30px var(--f-display);color:var(--muted)}
+.score{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:center;text-align:center}
+.score .nm{font:800 22px var(--f-display);text-transform:uppercase;overflow-wrap:anywhere}
+.score .pair{font-size:13px;color:var(--muted)}
+.score .num{font:800 clamp(56px,11vw,88px)/1 var(--f-display);color:var(--muted);margin-top:4px}
+.score .win .num{color:var(--good)}
+.score .sub{font-size:13px;color:var(--muted)}
+.score .dash{font:800 40px var(--f-display);color:var(--line)}
+.verdict{text-align:center;font:700 17px var(--f-body);margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.duel{margin:16px 0}
+.duel .bar{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--soft);margin:12px 0 8px}
+.duel .bar span{display:block}
+.h2h-table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.h2h-table th{font:600 11px var(--f-body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+.h2h-table td{padding:8px;border-bottom:1px solid var(--line);font-size:14px}
+.h2h-table td:first-child{font:800 18px var(--f-display)}
+.h2h-table .w{font-weight:700;color:var(--good)}
+.h2h-table .tag{font:600 12px var(--f-body);color:var(--muted)}
+.sharebar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}
+.btn{font:600 14px var(--f-body);padding:9px 16px;border-radius:999px;border:0;background:var(--ink);color:var(--bg);cursor:pointer}
+.btn:focus-visible{outline:3px solid var(--good);outline-offset:2px}
 footer{color:var(--muted);font-size:13px;padding:0 16px 40px}
 .keyrow{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted);margin:0 0 12px}
 .keyrow .wk{width:12px;height:12px;cursor:default;vertical-align:-1px;margin-right:5px;display:inline-block}
@@ -156,6 +186,7 @@ footer{color:var(--muted);font-size:13px;padding:0 16px 40px}
     <nav class="tabs" role="tablist" aria-label="Views">
       <button class="tab" role="tab" id="tab-main" aria-controls="view-main" aria-selected="true">Your weekends</button>
       <button class="tab" role="tab" id="tab-leaders" aria-controls="view-leaders" aria-selected="false">Leaderboards</button>
+      <button class="tab" role="tab" id="tab-h2h" aria-controls="view-h2h" aria-selected="false">Head to head</button>
     </nav>
     <div class="ranges" role="group" aria-label="Time range" id="ranges"></div>
     <div id="view-main" role="tabpanel" aria-labelledby="tab-main">
@@ -194,6 +225,29 @@ footer{color:var(--muted);font-size:13px;padding:0 16px 40px}
       <p class="lb-intro" id="lbIntro"></p>
       <div class="boards" id="boards"></div>
     </div>
+
+    <div id="view-h2h" role="tabpanel" aria-labelledby="tab-h2h" hidden>
+      <section class="h2h-pick">
+        <div class="card side">
+          <label for="meName">Name</label><input id="meName" maxlength="20" placeholder="You" autocomplete="off">
+          <label for="meCfb">College team</label><select id="meCfb"></select>
+          <label for="meNfl">NFL team</label><select id="meNfl"></select>
+        </div>
+        <div class="vs" aria-hidden="true">vs</div>
+        <div class="card side">
+          <label for="frName">Name</label><input id="frName" maxlength="20" placeholder="Friend" autocomplete="off">
+          <label for="frCfb">College team</label><select id="frCfb"></select>
+          <label for="frNfl">NFL team</label><select id="frNfl"></select>
+        </div>
+      </section>
+      <section class="card">
+        <div class="score" id="h2hScore"></div>
+        <div class="verdict" id="h2hVerdict"></div>
+        <div class="sharebar"><button class="btn" id="h2hShare">Copy link to this matchup</button><span class="hint" id="h2hCopied" style="margin:0"></span></div>
+      </section>
+      <section class="card duel" id="h2hDuel"></section>
+      <section class="card" id="h2hSeasons"></section>
+    </div>
   </div>
 </main>
 <footer class="wrap" id="foot"></footer>
@@ -206,7 +260,7 @@ const RANGES = [["season","This season"],["last","Last season"],["5","Last 5 sea
 const OFF = {0:-1, 1:-2, 2:4, 3:3, 4:2, 5:1, 6:0};   // day of week -> days to that weekend's Saturday (Tue..Mon)
 const fmtDay = iso => new Date(iso+"T12:00:00Z").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",timeZone:"UTC"});
 
-let D, CFB = [], NFL = [], state = {cfb:null, nfl:null, range:"season", sel:null};
+let D, CFB = [], NFL = [], state = {cfb:null, nfl:null, range:"season", sel:null, fcfb:null, fnfl:null, me:"", fr:""};
 
 function satOf(iso){ const d = new Date(iso+"T12:00:00Z"); d.setUTCDate(d.getUTCDate()+OFF[d.getUTCDay()]); return d.toISOString().slice(0,10); }
 
@@ -416,16 +470,77 @@ function renderLeaders(){
   $("boards").innerHTML = boards.join("");
 }
 
-/* tabs */
-function showTab(name, push){
-  const lead = name === "leaders";
-  $("tab-main").setAttribute("aria-selected", !lead); $("tab-leaders").setAttribute("aria-selected", lead);
-  $("view-main").hidden = lead; $("view-leaders").hidden = !lead;
-  if (lead) renderLeaders();
-  if (push) try { const u = new URL(location); u.hash = lead ? "leaders" : ""; history.replaceState(null, "", u); } catch(e){}
+/* ===================== Head to head: your two teams vs a friend's ===================== */
+function pairOutcomes(cId, nId, seasons){
+  if (!IDX) buildIndex();
+  const c = IDX.cfb[cId] || {}, n = IDX.nfl[nId] || {}, out = {};
+  for (const [sat, nw] of Object.entries(n)) {
+    const cw = c[sat]; if (!cw || cw.up || nw.up || !seasons.has(nw.season)) continue;
+    out[sat] = {season:nw.season, out: cw.res==="W"&&nw.res==="W" ? "good" : cw.res==="L"&&nw.res==="L" ? "bad" : "split"};
+  }
+  return out;
+}
+const tally = ws => { const t = {g:0,s:0,b:0,n:0}; for (const w of ws) { t.n++; t[w.out[0]]++; } t.pct = t.n ? t.g/t.n : 0; return t; };
+const nameOf = side => (side==="me" ? state.me : state.fr).trim() || (side==="me" ? "You" : "Friend");
+const pairName = (c, n) => `${esc(c.short)} + ${esc(n.short)}`;
+
+function renderH2H(){
+  const allSeasons = [...new Set(D.games.nfl.map(g=>g[0]))];
+  const seasons = new Set(seasonsIn(state.range, allSeasons.map(s=>({season:s}))));
+  const A = pairOutcomes(state.cfb.id, state.nfl.id, seasons), B = pairOutcomes(state.fcfb.id, state.fnfl.id, seasons);
+  const ta = tally(Object.values(A)), tb = tally(Object.values(B));
+  const me = esc(nameOf("me")), fr = esc(nameOf("fr"));
+  // winner: more good weekends, then better rate
+  const cmp = (ta.g - tb.g) || (ta.pct - tb.pct);
+  const label = RANGES.find(r=>r[0]===state.range)[1].toLowerCase();
+  const side = (nm, c, n, t, win) => `<div class="${win?"win":""}"><div class="nm">${nm}</div><div class="pair">${pairName(c,n)}</div>
+    <div class="num">${t.g}</div><div class="sub">good weekend${t.g===1?"":"s"} · ${t.n?Math.round(100*t.pct)+"% of "+t.n:"none counted"}</div><div class="sub">${t.g}–${t.s}–${t.b} good–split–bad</div></div>`;
+  $("h2hScore").innerHTML = side(me, state.cfb, state.nfl, ta, cmp>0) + `<div class="dash">–</div>` + side(fr, state.fcfb, state.fnfl, tb, cmp<0);
+  $("h2hVerdict").textContent = !ta.n && !tb.n ? `No counted weekends for either pair ${label}.`
+    : cmp>0 ? `${nameOf("me")} wins ${label}, ${ta.g}–${tb.g}${ta.g===tb.g?" on rate":""}.`
+    : cmp<0 ? `${nameOf("fr")} wins ${label}, ${tb.g}–${ta.g}${ta.g===tb.g?" on rate":""}.`
+    : `Dead even ${label}.`;
+
+  // weekend-by-weekend duel: good beats split beats bad, only weekends both pairs had a counted result
+  const rank = {good:2, split:1, bad:0}; let w=0, l=0, t=0;
+  for (const [sat, a] of Object.entries(A)) { const b = B[sat]; if (!b) continue; const d = rank[a.out]-rank[b.out]; if (d>0) w++; else if (d<0) l++; else t++; }
+  const tot = w+l+t;
+  $("h2hDuel").innerHTML = `<h2>Weekend by weekend</h2><p class="hint">Every weekend you both had a counted result, scored like a game: a good weekend beats a split, a split beats a bad one.</p>
+    ${tot ? `<div class="big" style="gap:8px"><span class="of" style="font-size:28px">${me} ${w}–${l}${t?`–${t}`:""}</span><span class="hint" style="margin:0">${w>l?`${me} leads`:l>w?`${fr} leads`:"Even"} · ${tot} weekend${tot===1?"":"s"}${t?`, ${t} tied`:""}</span></div>
+    <div class="bar" role="img" aria-label="${w} won by ${me}, ${t} tied, ${l} won by ${fr}"><span style="width:${100*w/tot}%;background:var(--good)"></span><span style="width:${100*t/tot}%;background:var(--one)"></span><span style="width:${100*l/tot}%;background:var(--bad)"></span></div>
+    <div class="legend"><span><i class="dot" style="background:var(--good)"></i>${me} better <b>${w}</b></span><span><i class="dot" style="background:var(--one)"></i>Same <b>${t}</b></span><span><i class="dot" style="background:var(--bad)"></i>${fr} better <b>${l}</b></span></div>`
+    : `<p class="empty">No weekends where both pairs had a counted result in this range.</p>`}`;
+
+  // season by season
+  const yrs = [...seasons].sort((x,y)=>y-x).filter(y=>Object.values(A).some(x=>x.season===y) || Object.values(B).some(x=>x.season===y));
+  let sw=0, sl=0;
+  const rows = yrs.map(y=>{
+    const a = tally(Object.values(A).filter(x=>x.season===y)), b = tally(Object.values(B).filter(x=>x.season===y));
+    const c = (a.g-b.g) || (a.pct-b.pct); if (c>0) sw++; else if (c<0) sl++;
+    const cell = (x, win) => `<span class="${win?"w":""}">${x.g}</span>–${x.s}–${x.b}`;
+    return `<tr><td>${y}</td><td>${cell(a,c>0)}</td><td>${cell(b,c<0)}</td><td class="tag">${c>0?me:c<0?fr:"Tie"}</td></tr>`;
+  }).join("");
+  $("h2hSeasons").innerHTML = yrs.length>1 || rows ? `<h2>Season by season</h2><p class="hint">Good–split–bad weekends each season.${yrs.length>1?` Seasons won: ${me} ${sw}, ${fr} ${sl}.`:""}</p>
+    <table class="h2h-table"><thead><tr><th>Season</th><th>${me}</th><th>${fr}</th><th>Winner</th></tr></thead><tbody>${rows}</tbody></table>` : "";
 }
 
-function syncURL(){ const u = new URL(location); u.searchParams.set("cfb", state.cfb.slug); u.searchParams.set("nfl", state.nfl.slug); history.replaceState(null,"",u); }
+/* tabs */
+function showTab(name, push){
+  if (!["main","leaders","h2h"].includes(name)) name = "main";
+  for (const k of ["main","leaders","h2h"]) { $("tab-"+k).setAttribute("aria-selected", k===name); $("view-"+k).hidden = k!==name; }
+  if (name === "leaders") renderLeaders();
+  if (name === "h2h") renderH2H();
+  if (push) try { const u = new URL(location); u.hash = name === "main" ? "" : name; history.replaceState(null, "", u); } catch(e){}
+  syncURL();
+}
+
+function syncURL(){
+  const u = new URL(location); u.searchParams.set("cfb", state.cfb.slug); u.searchParams.set("nfl", state.nfl.slug);
+  const h2h = u.hash === "#h2h";  // friend params only travel with head-to-head links
+  for (const [k, v] of [["fcfb", state.fcfb?.slug], ["fnfl", state.fnfl?.slug], ["me", state.me.trim()], ["fr", state.fr.trim()]])
+    if (h2h && v) u.searchParams.set(k, v); else u.searchParams.delete(k);
+  history.replaceState(null,"",u);
+}
 function paint(sel, t){ sel.style.setProperty("--tc", t.color ? "#"+t.color : ""); }
 
 async function boot(){
@@ -434,26 +549,48 @@ async function boot(){
   const p = new URLSearchParams(location.search);
   const find = (list, q, dflt) => list.find(t=>t.slug===q) || list.find(t=>t.slug.startsWith(q||"~")) || list.find(t=>t.slug===dflt) || list[0];
   state.cfb = find(CFB, p.get("cfb"), "texas-longhorns"); state.nfl = find(NFL, p.get("nfl"), "houston-texans");
+  state.fcfb = find(CFB, p.get("fcfb"), "oklahoma-sooners"); state.fnfl = find(NFL, p.get("fnfl"), "dallas-cowboys");
+  state.me = (p.get("me") || "").slice(0,20); state.fr = (p.get("fr") || "").slice(0,20);
   for (const [id, list, key] of [["cfb",CFB,"cfb"],["nfl",NFL,"nfl"]]) {
     const sel = $(id); sel.innerHTML = list.map(t=>`<option value="${t.id}">${esc(t.name)}</option>`).join("");
     sel.value = state[key].id; paint(sel, state[key]);
-    sel.addEventListener("change", ()=>{ state[key] = list.find(t=>t.id===sel.value); state.sel = null; paint(sel, state[key]); syncURL(); render(); });
+    sel.addEventListener("change", ()=>{ state[key] = list.find(t=>t.id===sel.value); state.sel = null; paint(sel, state[key]);
+      const mirror = $(key==="cfb"?"meCfb":"meNfl"); mirror.value = state[key].id; paint(mirror, state[key]);
+      syncURL(); render(); if (!$("view-h2h").hidden) renderH2H(); });
   }
+  // head-to-head pickers: "me" mirrors the header pickers, "friend" is its own pair
+  for (const [id, list, key] of [["meCfb",CFB,"cfb"],["meNfl",NFL,"nfl"],["frCfb",CFB,"fcfb"],["frNfl",NFL,"fnfl"]]) {
+    const sel = $(id); sel.innerHTML = list.map(t=>`<option value="${t.id}">${esc(t.name)}</option>`).join("");
+    sel.value = state[key].id; paint(sel, state[key]);
+    sel.addEventListener("change", ()=>{ state[key] = list.find(t=>t.id===sel.value); paint(sel, state[key]);
+      if (key==="cfb"||key==="nfl") { const head = $(key); head.value = state[key].id; paint(head, state[key]); state.sel = null; render(); }
+      syncURL(); renderH2H(); });
+  }
+  $("meName").value = state.me; $("frName").value = state.fr;
+  for (const [id, key] of [["meName","me"],["frName","fr"]]) $(id).addEventListener("input", e=>{ state[key] = e.target.value.slice(0,20); syncURL(); renderH2H(); });
+  $("h2hShare").addEventListener("click", async ()=>{
+    syncURL(); const url = location.href;
+    try { if (navigator.share && matchMedia("(pointer:coarse)").matches) { await navigator.share({title:"Football weekends: head to head", url}); return; }
+          await navigator.clipboard.writeText(url); $("h2hCopied").textContent = "Link copied"; }
+    catch(e){ $("h2hCopied").textContent = url; }
+    setTimeout(()=>{ $("h2hCopied").textContent = ""; }, 4000);
+  });
   $("ranges").innerHTML = RANGES.map(([k,l])=>`<button class="chip" data-r="${k}" aria-pressed="${k===state.range}">${l}</button>`).join("");
   $("ranges").addEventListener("click", e=>{ const b = e.target.closest(".chip"); if(!b) return; state.range = b.dataset.r;
-    document.querySelectorAll("#ranges .chip").forEach(x=>x.setAttribute("aria-pressed", x===b)); render(); if (!$("view-leaders").hidden) renderLeaders(); });
+    document.querySelectorAll("#ranges .chip").forEach(x=>x.setAttribute("aria-pressed", x===b)); render(); if (!$("view-leaders").hidden) renderLeaders(); if (!$("view-h2h").hidden) renderH2H(); });
+  $("tab-h2h").addEventListener("click", ()=>showTab("h2h", true));
   $("tab-main").addEventListener("click", ()=>showTab("main", true));
   $("tab-leaders").addEventListener("click", ()=>showTab("leaders", true));
   $("cfbFilter").addEventListener("click", e=>{ const b = e.target.closest(".chip"); if(!b) return; cfbMin = +b.dataset.f;
     document.querySelectorAll("#cfbFilter .chip").forEach(x=>x.setAttribute("aria-pressed", x===b)); renderLeaders(); });
   $("boards").addEventListener("click", e=>{ const b = e.target.closest(".lrow"); if(!b) return;
     state.cfb = CFB.find(t=>t.id===b.dataset.c); state.nfl = NFL.find(t=>t.id===b.dataset.n); state.sel = null;
-    for (const k of ["cfb","nfl"]) { $(k).value = state[k].id; paint($(k), state[k]); }
+    for (const [k, m] of [["cfb","meCfb"],["nfl","meNfl"]]) for (const id of [k, m]) { $(id).value = state[k].id; paint($(id), state[k]); }
     syncURL(); render(); showTab("main", true); window.scrollTo({top:0, behavior:"smooth"}); });
   $("seasons").addEventListener("click", e=>{ const b = e.target.closest(".wk"); if(!b) return; state.sel = state.sel===b.dataset.sat ? null : b.dataset.sat; render(); });
   $("foot").innerHTML = `Scores from ESPN, updated ${new Date(D.updated).toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}. A weekend runs Tuesday through Monday, so midweek college games and Monday Night Football count toward the nearest Saturday. Seasons are labeled by the year they start, so January bowls and playoffs count toward the season before. Unofficial fan project · <a href="https://github.com/joshmorris49/football-weekends">Code on GitHub</a>.`;
   syncURL(); $("loading").hidden = true; $("app").hidden = false; render();
-  showTab(location.hash === "#leaders" ? "leaders" : "main", false);
+  showTab(location.hash.slice(1) || "main", false);
 }
 boot().catch(e=>{ $("loading").textContent = "Couldn't load the game data. Try refreshing."; console.error(e); });
 </script>

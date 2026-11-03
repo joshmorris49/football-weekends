@@ -11,6 +11,7 @@ How good have your football weekends been? Pick a college team and an NFL team. 
 - **Weekends.** A weekend runs Tuesday through Monday, so midweek college games and Monday Night Football count toward the nearest Saturday. Seasons are labeled by the year they start, so January bowls and playoffs count toward the season before.
 - **What counts.** Headline numbers only use weekends when both teams played. Weekends with just one game show on the timeline but aren't counted.
 - **Leaderboards** (`#leaders`). Every college × NFL combo is scored in the browser for the chosen range: most good weekends, best rate, best single seasons, luckiest and unluckiest, longest streaks, and most miserable (both lost). A filter hides college teams below .500 (or .600/.700) over the range. The main view also shows where your combo ranks.
+- **Head to head** (`#h2h`). Your two teams against a friend's: good weekends for each side, a weekend-by-weekend record (good beats split beats bad), and a season-by-season table. Names and both pairs travel in the link (`fcfb`, `fnfl`, `me`, `fr`), so you can send it to the friend.
 - **Luck.** Good weekends compared with what you'd expect if both teams' results were independent at their actual win rates.
 
 The page is a single static `index.html` that reads `data/games.json`; there's no build step. `og.png` is the link-preview image (source: `scripts/og.html`, render with `python3 scripts/og.py`).
