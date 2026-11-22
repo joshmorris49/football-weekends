@@ -1,4 +1,4 @@
 python 3.12.16
-cfb 2026: 888 games (764 final) in 37s
-nfl 2026: 272 games (151 final) in 5s
+cfb 2026: 895 games (822 final) in 50s
+nfl 2026: 272 games (151 final) in 7s
 wrote /home/runner/work/football-weekends/football-weekends/data/games.json (853 KB)
